@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Net;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace DN6 {
     public class Contact : IComparable<Contact> {
@@ -15,11 +18,13 @@ namespace DN6 {
         public String Tel { get; set; }
         public String Departement { get; set; }
 
+        private const String ZHAW_URL = "https://www.zhaw.ch/de/ueber-uns/person/";
+
         public override String ToString() {
             StringBuilder stringBuilder = new StringBuilder();
             foreach (String element in this) {
-                stringBuilder.Append(element); 
-                stringBuilder.Append(";"); 
+                stringBuilder.Append(element);
+                stringBuilder.Append(";");
             }
             return stringBuilder.ToString();
         }
@@ -35,6 +40,35 @@ namespace DN6 {
               "END:VCARD";
             return vcfString;
 
+        }
+
+        private static string GetTelNumber(String kurz) {
+            string url = ZHAW_URL + kurz + "/";
+
+            WebRequest req = WebRequest.Create(url);
+
+            using (WebResponse resp = req.GetResponse()) {
+                using (StreamReader r = new StreamReader(resp.GetResponseStream())) {
+                    string content = r.ReadToEnd();
+
+                    string pattern = @"<span\s+class=""person-fon"">\s*<a\s+href=""tel:([^""]+)"">\+41\s\(\s*0\s*\)\s*58\s*934\s*66\s*92\s*</a>\s*</span>";
+                    Match match = Regex.Match(content, pattern);
+
+                    if (match.Success) {
+                        string phoneNumber = match.Groups[1].Value;
+                        return phoneNumber;
+                    } else {
+                        Console.WriteLine("Phone number not found.");
+                    }
+                }
+            }
+
+            return "+41589347588";
+        }
+
+
+        public void addPhoneNumber() {
+            Tel = GetTelNumber(Kurz).Replace("(0)", "").Replace(" ", "");
         }
 
         public IEnumerator<String> GetEnumerator() {
@@ -61,5 +95,14 @@ namespace DN6 {
             return other.Name.CompareTo(Name);
         }
 
+        /*
+        static void Main(string[] args) {
+
+            string res = GetTelNumber("mosa");
+
+            Console.WriteLine("Result " + res);
+        }*/
     }
+
+    
 }
