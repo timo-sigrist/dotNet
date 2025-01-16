@@ -7,17 +7,15 @@ using System.Text;
 
 namespace Test {
     public class Network_Example {
-
         public void DNS_Methode() {
             IPHostEntry hostEntry = Dns.Resolve("www.google.com");
             foreach (IPAddress ip in hostEntry.AddressList) {
                 Console.WriteLine(ip.ToString());
             }
-
         }
     }
 
-    public class ClientExample {
+    public class ServerExample {
         static void Main() {
             // IP-Adresse und Port definieren
             IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
@@ -63,7 +61,7 @@ namespace Test {
     }
 
 
-    class ServerExample {
+    class ClientExample {
         static void Main() {
             // IP-Adresse und Port des Servers definieren
             IPAddress ipAddress = IPAddress.Parse("127.0.0.1");

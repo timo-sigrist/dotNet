@@ -15,6 +15,7 @@ namespace Test {
     }
 
 
+    [Serializable] // Klassen-Attribut -> Metadaten die zusätzlice Informationen geben
 
     public class MyClass {
         public int PropNumber { get; set; } // Property
